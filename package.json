@@ -1,0 +1,43 @@
+{
+  "name": "ng-backendless",
+  "version": "1.0.0",
+  "description": "Fully featured, extensible and flexible Angular (4+) module for application Backendless development.",
+  "main": "bundles/ng-backendless.umd.js",
+  "module": "ng-backendless.js",
+  "typings": "ng-backendless.d.ts",
+  "scripts": {
+    "watch": "tsc -w",
+    "compile": "npm run compile.commonjs && npm run compile.systemjs",
+    "compile.commonjs": "ngc -p tsconfig.publish.json",
+    "compile.systemjs": "node ./.config/umd-bundler.js",
+    "test": "tslint ./src/*.ts ./src/**/*.ts",
+    "prepublish": "npm run compile",
+    "typings": "typings"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ilguzin/ng-backendless.git"
+  },
+  "author": "Denis Ilguzin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ilguzin/ng-backendless/issues"
+  },
+  "homepage": "https://github.com/ilguzin/ng-backendless#readme",
+  "dependencies": {
+    "@angular/common": "^4.4.6",
+    "@angular/compiler": "^4.4.6",
+    "@angular/core": "^4.4.6",
+    "rxjs": "^5.5.1",
+    "zone.js": "^0.8.18"
+  },
+  "devDependencies": {
+    "@angular/compiler-cli": "^4.4.6",
+    "async": "^2.5.0",
+    "codelyzer": "^3.2.2",
+    "del-cli": "^1.1.0",
+    "systemjs-builder": "^0.16.12",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3"
+  }
+}
