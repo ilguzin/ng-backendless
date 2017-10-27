@@ -1,6 +1,8 @@
 # ng-backendless
 
-Fully featured, extensible and flexible Angular (4+) module for application backendless development.
+Fully featured, extensible and flexible Angular (4+) module for application backendless development. The functionality 
+is based on injecting (via [HttpInterceptor](https://angular.io/api/common/http/HttpInterceptor)) of a list of fake 
+backend API mappings that will be used by HttpClient implicitly when you run http calls in your application.
 
 ## How to use
 
@@ -8,7 +10,7 @@ Fully featured, extensible and flexible Angular (4+) module for application back
 
 import {NgModule} from '@angular/core';
 import {HttpClientModule, HttpResponse} from '@angular/common/http';
-import {FakeBackend, FakeBackendRoutesFactory, FakeBackendRoutes} from 'ng-backendless';
+import {FakeBackendModule, FakeBackendRoutesFactory, FakeBackendRoutes} from 'ng-backendless';
 
 class Value {
   constructor(public val: number) {}
@@ -16,7 +18,7 @@ class Value {
 
 const fakeBackendRoutes: FakeBackendRoutes = FakeBackendRoutesFactory.empty();
 
-fakeBackendRoutes.push(FakeBackendRoutesFactory.makeUrlRouter<Value>(
+fakeBackendRoutes.push(FakeBackendRoutesFactory.makeSimpleUrlMatchRouter<Value>(
   '/api/value',
   new HttpResponse<Value>({body: new Value(10), status: 200, statusText: 'OK'})
 ));
@@ -24,7 +26,7 @@ fakeBackendRoutes.push(FakeBackendRoutesFactory.makeUrlRouter<Value>(
 @NgModule({
   imports: [
     HttpClientModule,
-    FakeBackend.forRoot(fakeBackendRoutes)
+    FakeBackendModule.forRoot(fakeBackendRoutes)
   ],
   declarations: [
   ],

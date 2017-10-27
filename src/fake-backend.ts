@@ -9,11 +9,11 @@ import {FakeBackendRoutesFactory} from './routes';
     {provide: HTTP_INTERCEPTORS, useClass: FakeBackendInterceptor, multi: true}
   ]
 })
-export class FakeBackend {
+export class FakeBackendModule {
 
   static forRoot(routes: FakeBackendRoutes = FakeBackendRoutesFactory.empty()): ModuleWithProviders {
     return {
-      ngModule: FakeBackend,
+      ngModule: FakeBackendModule,
       providers: [
         {provide: FAKE_BACKEND_ROUTES, useValue: routes}
       ]

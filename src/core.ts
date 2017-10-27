@@ -13,7 +13,7 @@ export declare type FakeBackendRoutes = Array<FakeBackendRoute>;
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
 
-  constructor(@Inject(FAKE_BACKEND_ROUTES) private routes: FakeBackendRoutes) {
+  constructor(@Inject(FAKE_BACKEND_ROUTES) protected routes: FakeBackendRoutes) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
