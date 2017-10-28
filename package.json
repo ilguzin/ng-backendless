@@ -36,6 +36,7 @@
   "devDependencies": {
     "@angular/cli": "^1.4.9",
     "@angular/compiler-cli": "^4.4.6",
+    "@angular/platform-browser-dynamic": "^4.4.6",
     "async": "^2.5.0",
     "codelyzer": "^3.2.2",
     "core-js": "^2.5.1",
