@@ -35,9 +35,10 @@ src/**/*.js.map
 
 /*.js
 
-/bundles
-
+bundles
 factories
+coverage
+html-report
 
 /**/*.metadata.json
 

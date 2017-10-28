@@ -1,0 +1,29 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es5",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "lib": [
+      "es6",
+      "es2017",
+      "dom",
+      "scripthost"
+    ],
+    "baseUrl": ".",
+    "typeRoots": [
+      "node_modules/@types/"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "bundles",
+    "dist",
+    "src/*.d.ts"
+  ]
+}

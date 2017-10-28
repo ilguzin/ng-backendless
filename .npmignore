@@ -41,3 +41,5 @@ demo
 !/src/*.d.ts
 
 factories
+coverage
+html-report
