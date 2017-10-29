@@ -43,3 +43,5 @@ demo
 factories
 coverage
 html-report
+
+.coveralls.yml

@@ -11,8 +11,7 @@ module.exports = function karmaConf(config) {
       require('karma-typescript'),
       require('karma-chrome-launcher'),
       require('karma-phantomjs-launcher'),
-      require('karma-jasmine-html-reporter'),
-      require('karma-coverage-istanbul-reporter')
+      require('karma-jasmine-html-reporter')
     ],
     client:{
       clearContext: false // leave Jasmine Spec Runner output visible in browser
@@ -37,8 +36,9 @@ module.exports = function karmaConf(config) {
         exclude: /\.(d|spec|test)\.ts?/,
       },
       reports: {
-        "html": "coverage",
-        "text": "",
+        // "html": "coverage",
+        // "text": "",
+        "lcovonly": "coverage"
       },
     }
 

@@ -72,13 +72,13 @@ export class ReadElementByParamsRoute<T> extends UrlParamsParserRoute {
 
 }
 
-export class UpdateElementByParamsRoute<T> extends UrlParamsParserRoute {
+export class UpdateElementByParamsRoute extends UrlParamsParserRoute {
 
-  constructor(protected urlSpec: string, protected elements: T[]) {
+  constructor(protected urlSpec: string, protected elements: any[]) {
     super(urlSpec);
   }
 
-  match(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<any>> {
+  match(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Additional filer by PUT method
     return req.method === 'PUT' ? super.match(req, next) : next.handle(req);
   }
@@ -89,9 +89,7 @@ export class UpdateElementByParamsRoute<T> extends UrlParamsParserRoute {
     });
 
     if (element) {
-
       Object.assign(element, req.body);
-
       return Observable.of(SUCCESS_RESPONSE);
     } else {
       return Observable.of(ELEMENT_NOT_FOUND_ERROR_RESPONSE);
@@ -101,9 +99,9 @@ export class UpdateElementByParamsRoute<T> extends UrlParamsParserRoute {
 
 }
 
-export class DeleteElementByParamsRoute<T> extends UrlParamsParserRoute {
+export class DeleteElementByParamsRoute extends UrlParamsParserRoute {
 
-  constructor(protected urlSpec: string, protected elements: T[]) {
+  constructor(protected urlSpec: string, protected elements: any[]) {
     super(urlSpec);
   }
 
@@ -148,8 +146,12 @@ export class FakeBackendRoutesFactory {
     return new ReadElementByParamsRoute<T>(urlSpec, elements);
   }
 
-  static makeDeleteByParamsRoute<T>(urlSpec: string, elements: T[]) {
-    return new DeleteElementByParamsRoute<T>(urlSpec, elements);
+  static makeUpdateByParamsRoute(urlSpec: string, elements: any[]) {
+    return new UpdateElementByParamsRoute(urlSpec, elements);
+  }
+
+  static makeDeleteByParamsRoute(urlSpec: string, elements: any[]) {
+    return new DeleteElementByParamsRoute(urlSpec, elements);
   }
 
 }

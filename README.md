@@ -1,6 +1,7 @@
 
 # ng-backendless
 [![Build Status](https://travis-ci.org/ilguzin/ng-backendless.svg?branch=master)](https://travis-ci.org/ilguzin/ng-backendless)
+[![Coverage Status](https://coveralls.io/repos/github/ilguzin/ng-backendless/badge.svg)](https://coveralls.io/github/ilguzin/ng-backendless)
 
 Fully featured, extensible and flexible Angular (4+) module for application backendless development. The functionality 
 is based on injecting (via [HttpInterceptor](https://angular.io/api/common/http/HttpInterceptor)) of a list of fake 
