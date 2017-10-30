@@ -1,8 +1,7 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 
-import {FAKE_BACKEND_ROUTES, FakeBackendInterceptor, FakeBackendRoutes} from './core';
-import {FakeBackendRoutesFactory} from './routes';
+import {FAKE_BACKEND_CONFIG, FakeBackendInterceptor, FakeBackendConfig} from './core';
 
 @NgModule({
   providers: [
@@ -11,11 +10,11 @@ import {FakeBackendRoutesFactory} from './routes';
 })
 export class FakeBackendModule {
 
-  static forRoot(routes: FakeBackendRoutes = FakeBackendRoutesFactory.empty()): ModuleWithProviders {
+  static forRoot(config: FakeBackendConfig = FakeBackendConfig.empty()): ModuleWithProviders {
     return {
       ngModule: FakeBackendModule,
       providers: [
-        {provide: FAKE_BACKEND_ROUTES, useValue: routes}
+        {provide: FAKE_BACKEND_CONFIG, useValue: config}
       ]
     };
   }

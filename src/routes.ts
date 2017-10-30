@@ -2,10 +2,10 @@ import {HttpEvent, HttpHandler, HttpRequest, HttpResponse} from '@angular/common
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
-import {FakeBackendRoute, FakeBackendRoutes} from './core';
+import {FakeBackendRoute} from './core';
 import {SUCCESS_RESPONSE, ELEMENT_NOT_FOUND_ERROR_RESPONSE, matchAndParseParamsFromUrl} from './helpers';
 
-export abstract class UrlParamsParserRoute implements FakeBackendRoute, HttpHandler {
+export abstract class UrlParamsParserRoute<T> implements FakeBackendRoute<T>, HttpHandler {
 
   constructor(protected urlSpec: string) {
   }
@@ -16,11 +16,11 @@ export abstract class UrlParamsParserRoute implements FakeBackendRoute, HttpHand
     return params ? this.handle(req.clone({setParams: params})) : next.handle(req);
   }
 
-  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<T>>;
 
 }
 
-export class SimpleUrlMatchRoute<T> implements FakeBackendRoute {
+export class SimpleUrlMatchRoute<T> implements FakeBackendRoute<T> {
 
   constructor(protected url: string, protected event: HttpEvent<T>) {
   }
@@ -31,7 +31,7 @@ export class SimpleUrlMatchRoute<T> implements FakeBackendRoute {
 
 }
 
-export class CreateElementRoute<T> extends UrlParamsParserRoute {
+export class CreateElementRoute<T> extends UrlParamsParserRoute<T> {
 
   constructor(protected urlSpec: string, protected elements: T[]) {
     super(urlSpec);
@@ -42,14 +42,14 @@ export class CreateElementRoute<T> extends UrlParamsParserRoute {
     return req.method === 'POST' ? super.match(req, next) : next.handle(req);
   }
 
-  handle(req: HttpRequest<T>): Observable<HttpEvent<any>> {
+  handle(req: HttpRequest<T>): Observable<HttpEvent<T>> {
     this.elements.push(req.body);
     return Observable.of(SUCCESS_RESPONSE);
   }
 
 }
 
-export class ReadElementByParamsRoute<T> extends UrlParamsParserRoute {
+export class ReadElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
 
   constructor(protected urlSpec: string, protected elements: T[]) {
     super(urlSpec);
@@ -61,7 +61,7 @@ export class ReadElementByParamsRoute<T> extends UrlParamsParserRoute {
   }
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    const element = this.elements.find((elm: { [key: string]: any }) => {
+    const element: T = this.elements.find((elm: { [key: string]: any }) => {
       return req.params.keys().reduce((memo, paramKey) => memo && elm[paramKey].toString() === req.params.get(paramKey).toString(), true);
     });
 
@@ -72,9 +72,9 @@ export class ReadElementByParamsRoute<T> extends UrlParamsParserRoute {
 
 }
 
-export class UpdateElementByParamsRoute extends UrlParamsParserRoute {
+export class UpdateElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
 
-  constructor(protected urlSpec: string, protected elements: any[]) {
+  constructor(protected urlSpec: string, protected elements: T[]) {
     super(urlSpec);
   }
 
@@ -84,7 +84,7 @@ export class UpdateElementByParamsRoute extends UrlParamsParserRoute {
   }
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    const element = this.elements.find((elm: { [key: string]: any }) => {
+    const element: T = this.elements.find((elm: { [key: string]: any }) => {
       return req.params.keys().reduce((memo, paramKey) => memo && elm[paramKey].toString() === req.params.get(paramKey).toString(), true);
     });
 
@@ -99,9 +99,9 @@ export class UpdateElementByParamsRoute extends UrlParamsParserRoute {
 
 }
 
-export class DeleteElementByParamsRoute extends UrlParamsParserRoute {
+export class DeleteElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
 
-  constructor(protected urlSpec: string, protected elements: any[]) {
+  constructor(protected urlSpec: string, protected elements: T[]) {
     super(urlSpec);
   }
 
@@ -126,31 +126,27 @@ export class DeleteElementByParamsRoute extends UrlParamsParserRoute {
 
 export class FakeBackendRoutesFactory {
 
-  static empty(): FakeBackendRoutes {
-    return [];
-  }
-
-  static makeSimpleUrlMatchRouter<T>(url: string, event: HttpEvent<T>): FakeBackendRoute {
+  static makeSimpleUrlMatchRouter<T>(url: string, event: HttpEvent<T>): FakeBackendRoute<T> {
     return new SimpleUrlMatchRoute<T>(url, event);
   }
 
-  static makeSimpleUrlMatchEntityRouter<T>(url: string, entity: T): FakeBackendRoute {
+  static makeSimpleUrlMatchEntityRouter<T>(url: string, entity: T): FakeBackendRoute<T> {
     return new SimpleUrlMatchRoute<T>(url, new HttpResponse<T>({body: entity, status: 200, statusText: 'OK'}));
   }
 
-  static makeCreateElementRoute<T>(urlSpec: string, elements: T[]) {
+  static makeCreateElementRoute<T>(urlSpec: string, elements: T[]): FakeBackendRoute<T> {
     return new CreateElementRoute<T>(urlSpec, elements);
   }
 
-  static makeReadByParamsRoute<T>(urlSpec: string, elements: T[]) {
+  static makeReadByParamsRoute<T>(urlSpec: string, elements: T[]): FakeBackendRoute<T> {
     return new ReadElementByParamsRoute<T>(urlSpec, elements);
   }
 
-  static makeUpdateByParamsRoute(urlSpec: string, elements: any[]) {
+  static makeUpdateByParamsRoute(urlSpec: string, elements: any[]): FakeBackendRoute<any> {
     return new UpdateElementByParamsRoute(urlSpec, elements);
   }
 
-  static makeDeleteByParamsRoute(urlSpec: string, elements: any[]) {
+  static makeDeleteByParamsRoute(urlSpec: string, elements: any[]): FakeBackendRoute<any> {
     return new DeleteElementByParamsRoute(urlSpec, elements);
   }
 

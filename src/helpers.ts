@@ -1,7 +1,7 @@
 import {HttpResponse} from '@angular/common/http';
 
-export const SUCCESS_RESPONSE = new HttpResponse({body: {}, status: 200, statusText: 'OK'});
-export const ELEMENT_NOT_FOUND_ERROR_RESPONSE = new HttpResponse({status: 404, statusText: 'Not found'});
+export const SUCCESS_RESPONSE = new HttpResponse({body: null, status: 200, statusText: 'OK'});
+export const ELEMENT_NOT_FOUND_ERROR_RESPONSE = new HttpResponse({body: null, status: 404, statusText: 'Not found'});
 
 export function matchAndParseParamsFromUrl(url: string, urlSpec: string): { [param: string]: string; } {
 

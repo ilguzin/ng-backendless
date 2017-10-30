@@ -2,18 +2,26 @@ import {Inject, Injectable, InjectionToken} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 
-export const FAKE_BACKEND_ROUTES = new InjectionToken<FakeBackendRoutes>('FAKE_BACKEND_ROUTES');
 
-export interface FakeBackendRoute {
-  match(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
+export interface FakeBackendRoute<T> {
+  match(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<T>>;
 }
 
-export declare type FakeBackendRoutes = Array<FakeBackendRoute>;
+export class FakeBackendConfig {
+  constructor(public routes: FakeBackendRoute<any>[]) {
+  }
+
+  static empty() {
+    return new FakeBackendConfig([]);
+  }
+}
+
+export const FAKE_BACKEND_CONFIG = new InjectionToken<FakeBackendConfig>('FAKE_BACKEND_CONFIG');
 
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
 
-  constructor(@Inject(FAKE_BACKEND_ROUTES) protected routes: FakeBackendRoutes) {
+  constructor(@Inject(FAKE_BACKEND_CONFIG) protected config: FakeBackendConfig) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -21,7 +29,9 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     /**
      * Recursively iterate over list of routes. The one satisfying the {@link FakeBackendRoute.match} will return from the function.
      */
-    const matchNextRoute = function (req1: HttpRequest<any>, routes: FakeBackendRoutes, routeId: number = 0): Observable<HttpEvent<any>> {
+    const matchNextRoute = function (req1: HttpRequest<any>,
+                                     routes: FakeBackendRoute<any>[],
+                                     routeId: number = 0): Observable<HttpEvent<any>> {
       const route = routes[routeId];
       return route ? route.match(req1, <HttpHandler> {
         handle(req2: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -30,7 +40,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       }) : next.handle(req);
     };
 
-    return matchNextRoute(req, this.routes);
+    return matchNextRoute(req, this.config.routes);
 
   }
 }
