@@ -10,7 +10,7 @@ import {FAKE_BACKEND_CONFIG, FakeBackendInterceptor, FakeBackendConfig} from './
 })
 export class FakeBackendModule {
 
-  static forRoot(config: FakeBackendConfig = FakeBackendConfig.empty()): ModuleWithProviders {
+  static forRoot(config: FakeBackendConfig): ModuleWithProviders {
     return {
       ngModule: FakeBackendModule,
       providers: [
