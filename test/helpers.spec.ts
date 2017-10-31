@@ -1,4 +1,4 @@
-import {matchAndParseParamsFromUrl} from '../src/helpers';
+import {matchAndParseParamsFromUrl} from '../ng-backendless';
 
 describe('helpers tests', () => {
 

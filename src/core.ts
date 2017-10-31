@@ -7,13 +7,8 @@ export interface FakeBackendRoute<T> {
   match(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<T>>;
 }
 
-export class FakeBackendConfig {
-  constructor(public routes: FakeBackendRoute<any>[]) {
-  }
-
-  static empty() {
-    return new FakeBackendConfig([]);
-  }
+export interface FakeBackendConfig {
+  routes: Array<FakeBackendRoute<any>>;
 }
 
 export const FAKE_BACKEND_CONFIG = new InjectionToken<FakeBackendConfig>('FAKE_BACKEND_CONFIG');
@@ -30,7 +25,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
      * Recursively iterate over list of routes. The one satisfying the {@link FakeBackendRoute.match} will return from the function.
      */
     const matchNextRoute = function (req1: HttpRequest<any>,
-                                     routes: FakeBackendRoute<any>[],
+                                     routes: Array<FakeBackendRoute<any>>,
                                      routeId: number = 0): Observable<HttpEvent<any>> {
       const route = routes[routeId];
       return route ? route.match(req1, <HttpHandler> {

@@ -20,6 +20,7 @@ module.exports = function karmaConf(config) {
 
     files: [
       'test/test.spec.ts',
+      './ng-backendless.ts',
       'src/*.ts',
       'test/*.spec.ts'
     ],

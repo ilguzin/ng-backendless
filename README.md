@@ -13,23 +13,25 @@ backend API mappings that will be used by HttpClient implicitly when you run htt
 
 import {NgModule} from '@angular/core';
 import {HttpClientModule, HttpResponse} from '@angular/common/http';
-import {FakeBackendModule, FakeBackendRoutesFactory, FakeBackendRoutes} from 'ng-backendless';
+import {FakeBackendModule, FakeBackendConfig, SimpleUrlMatchRoute} from 'ng-backendless';
 
 class Value {
   constructor(public val: number) {}
 }
 
-const fakeBackendRoutes: FakeBackendRoutes = FakeBackendRoutesFactory.empty();
+export function fakeBackendConfigFactory() {
+  return <FakeBackendConfig>{
+    routes: [
+      new SimpleUrlMatchRoute('/api/values', new HttpResponse({body: [new Value(100)], status: 200, statusText: 'OK'}))
+    ]
+  };
+}
 
-fakeBackendRoutes.push(FakeBackendRoutesFactory.makeSimpleUrlMatchRouter<Value>(
-  '/api/value',
-  new HttpResponse<Value>({body: new Value(10), status: 200, statusText: 'OK'})
-));
 
 @NgModule({
   imports: [
     HttpClientModule,
-    FakeBackendModule.forRoot(fakeBackendRoutes)
+    FakeBackendModule.forRoot(fakeBackendConfigFactory)
   ],
   declarations: [
   ],

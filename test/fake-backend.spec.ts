@@ -1,8 +1,8 @@
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {TestBed, async, inject} from '@angular/core/testing';
-import {FakeBackendConfig} from '../src/core';
-import {FakeBackendRoutesFactory} from '../src/routes';
-import {FakeBackendModule} from '../src/fake-backend';
+
+import {FakeBackendConfig, FakeBackendRoutesFactory, FakeBackendModule} from '../ng-backendless';
+
 
 class Value {
   constructor(public id: number, public val: number) {
@@ -14,12 +14,16 @@ const testValue2 = new Value(2, 20);
 const testValue3 = new Value(3, 30);
 const testValues = [testValue1, testValue2, testValue3];
 
-const fakeBackendConfig: FakeBackendConfig = new FakeBackendConfig([
-  FakeBackendRoutesFactory.makeSimpleUrlMatchEntityRouter<Value[]>('/api/values', testValues),
-  FakeBackendRoutesFactory.makeReadByParamsRoute<Value>('/api/values/:id', testValues),
-  FakeBackendRoutesFactory.makeUpdateByParamsRoute('/api/values/:id', testValues),
-  FakeBackendRoutesFactory.makeDeleteByParamsRoute('/api/values/:id', testValues)
-]);
+export function fakeBackendConfigFactory() {
+  return <FakeBackendConfig>{
+    routes: [
+      FakeBackendRoutesFactory.makeSimpleUrlMatchEntityRouter<Value[]>('/api/values', testValues),
+      FakeBackendRoutesFactory.makeReadByParamsRoute<Value>('/api/values/:id', testValues),
+      FakeBackendRoutesFactory.makeUpdateByParamsRoute('/api/values/:id', testValues),
+      FakeBackendRoutesFactory.makeDeleteByParamsRoute('/api/values/:id', testValues)
+    ]
+  };
+}
 
 describe('FakeBackendModule tests', () => {
   beforeEach(() => {
@@ -27,7 +31,7 @@ describe('FakeBackendModule tests', () => {
       declarations: [],
       imports: [
         HttpClientModule,
-        FakeBackendModule.forRoot(fakeBackendConfig)
+        FakeBackendModule.forRoot(fakeBackendConfigFactory)
       ]
     }).compileComponents();
   });
