@@ -22,11 +22,11 @@ export abstract class UrlParamsParserRoute<T> implements FakeBackendRoute<T>, Ht
 
 export class SimpleUrlMatchRoute<T> implements FakeBackendRoute<T> {
 
-  constructor(protected url: string, protected event: HttpEvent<T>) {
+  constructor(protected url: string, protected event: HttpResponse<T>) {
   }
 
   match(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<T>> {
-    return req.url.endsWith(this.url) ? Observable.of(this.event) : next.handle(req);
+    return req.url.endsWith(this.url) ? Observable.of(this.event.clone()) : next.handle(req);
   }
 
 }
@@ -42,8 +42,8 @@ export class CreateElementRoute<T> extends UrlParamsParserRoute<T> {
     return req.method === 'POST' ? super.match(req, next) : next.handle(req);
   }
 
-  handle(req: HttpRequest<T>): Observable<HttpEvent<T>> {
-    this.elements.push(req.body);
+  handle(req: HttpRequest<T>): Observable<HttpResponse<T>> {
+    this.elements.push(req.clone().body);
     return Observable.of(SUCCESS_RESPONSE);
   }
 
@@ -60,13 +60,13 @@ export class ReadElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
     return req.method === 'GET' ? super.match(req, next) : next.handle(req);
   }
 
-  handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+  handle(req: HttpRequest<any>): Observable<HttpResponse<any>> {
     const element: T = this.elements.find((elm: { [key: string]: any }) => {
       return req.params.keys().reduce((memo, paramKey) => memo && elm[paramKey].toString() === req.params.get(paramKey).toString(), true);
     });
 
     return element ?
-      Observable.of(new HttpResponse<T>({body: element, status: 200, statusText: 'OK'})) :
+      Observable.of(new HttpResponse<T>({body: element, status: 200, statusText: 'OK'}).clone()) :
       Observable.of(ELEMENT_NOT_FOUND_ERROR_RESPONSE);
   }
 
@@ -83,13 +83,13 @@ export class UpdateElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
     return req.method === 'PUT' ? super.match(req, next) : next.handle(req);
   }
 
-  handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+  handle(req: HttpRequest<any>): Observable<HttpResponse<any>> {
     const element: T = this.elements.find((elm: { [key: string]: any }) => {
       return req.params.keys().reduce((memo, paramKey) => memo && elm[paramKey].toString() === req.params.get(paramKey).toString(), true);
     });
 
     if (element) {
-      Object.assign(element, req.body);
+      Object.assign(element, req.clone().body);
       return Observable.of(SUCCESS_RESPONSE);
     } else {
       return Observable.of(ELEMENT_NOT_FOUND_ERROR_RESPONSE);
@@ -110,7 +110,7 @@ export class DeleteElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
     return req.method === 'DELETE' ? super.match(req, next) : next.handle(req);
   }
 
-  handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+  handle(req: HttpRequest<any>): Observable<HttpResponse<any>> {
     const elementIndex = this.elements.findIndex((elm: { [key: string]: any }) => {
       return req.params.keys().reduce((memo, paramKey) => memo && elm[paramKey].toString() === req.params.get(paramKey).toString(), true);
     });
@@ -126,7 +126,7 @@ export class DeleteElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
 
 export class FakeBackendRoutesFactory {
 
-  static makeSimpleUrlMatchRouter<T>(url: string, event: HttpEvent<T>): FakeBackendRoute<T> {
+  static makeSimpleUrlMatchRouter<T>(url: string, event: HttpResponse<T>): FakeBackendRoute<T> {
     return new SimpleUrlMatchRoute<T>(url, event);
   }
 
