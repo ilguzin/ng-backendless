@@ -2,6 +2,8 @@ import {HttpEvent, HttpHandler, HttpRequest, HttpResponse} from '@angular/common
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
+import * as _ from 'lodash';
+
 import {FakeBackendRoute} from './core';
 import {SUCCESS_RESPONSE, ELEMENT_NOT_FOUND_ERROR_RESPONSE, matchAndParseParamsFromUrl} from './helpers';
 
@@ -26,14 +28,16 @@ export class SimpleUrlMatchRoute<T> implements FakeBackendRoute<T> {
   }
 
   match(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<T>> {
-    return req.url.endsWith(this.url) ? Observable.of(this.event.clone()) : next.handle(req);
+    return req.method === 'GET' && req.url.endsWith(this.url) ?
+      Observable.of(this.event.clone({body: _.cloneDeep(this.event.body)})) : next.handle(req);
   }
 
 }
 
 export class CreateElementRoute<T> extends UrlParamsParserRoute<T> {
 
-  constructor(protected urlSpec: string, protected elements: T[]) {
+  constructor(protected urlSpec: string, protected elements: T[],
+              protected createFactory: (elements: T[], newData: any) => T) {
     super(urlSpec);
   }
 
@@ -42,9 +46,10 @@ export class CreateElementRoute<T> extends UrlParamsParserRoute<T> {
     return req.method === 'POST' ? super.match(req, next) : next.handle(req);
   }
 
-  handle(req: HttpRequest<T>): Observable<HttpResponse<T>> {
-    this.elements.push(req.clone().body);
-    return Observable.of(SUCCESS_RESPONSE);
+  handle(req: HttpRequest<any>): Observable<HttpResponse<T>> {
+    const newElement = this.createFactory(this.elements, req.body);
+    this.elements.push(newElement);
+    return Observable.of(new HttpResponse<T>({body: _.cloneDeep(newElement), status: 200, statusText: 'OK'}));
   }
 
 }
@@ -66,7 +71,7 @@ export class ReadElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
     });
 
     return element ?
-      Observable.of(new HttpResponse<T>({body: element, status: 200, statusText: 'OK'}).clone()) :
+      Observable.of(new HttpResponse<T>({body: _.cloneDeep(element), status: 200, statusText: 'OK'})) :
       Observable.of(ELEMENT_NOT_FOUND_ERROR_RESPONSE);
   }
 
@@ -89,7 +94,7 @@ export class UpdateElementByParamsRoute<T> extends UrlParamsParserRoute<T> {
     });
 
     if (element) {
-      Object.assign(element, req.clone().body);
+      Object.assign(element, _.cloneDeep(req.body));
       return Observable.of(SUCCESS_RESPONSE);
     } else {
       return Observable.of(ELEMENT_NOT_FOUND_ERROR_RESPONSE);
@@ -134,8 +139,8 @@ export class FakeBackendRoutesFactory {
     return new SimpleUrlMatchRoute<T>(url, new HttpResponse<T>({body: entity, status: 200, statusText: 'OK'}));
   }
 
-  static makeCreateElementRoute<T>(urlSpec: string, elements: T[]): FakeBackendRoute<T> {
-    return new CreateElementRoute<T>(urlSpec, elements);
+  static makeCreateElementRoute<T>(urlSpec: string, elements: T[], createFactory: (elements: T[], newData: any) => T): FakeBackendRoute<T> {
+    return new CreateElementRoute<T>(urlSpec, elements, createFactory);
   }
 
   static makeReadByParamsRoute<T>(urlSpec: string, elements: T[]): FakeBackendRoute<T> {
