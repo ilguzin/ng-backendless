@@ -1,6 +1,6 @@
 {
   "name": "ng-backendless",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Fully featured, extensible and flexible Angular (4+) module for application Backendless development.",
   "main": "bundles/ng-backendless.umd.js",
   "module": "ng-backendless.js",
