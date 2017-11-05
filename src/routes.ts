@@ -22,14 +22,17 @@ export abstract class UrlParamsParserRoute<T> implements FakeBackendRoute<T>, Ht
 
 }
 
-export class SimpleUrlMatchRoute<T> implements FakeBackendRoute<T> {
+export class SimpleUrlMatchRoute<T> implements FakeBackendRoute<T>, HttpHandler {
 
   constructor(protected url: string, protected event: HttpResponse<T>) {
   }
 
   match(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<T>> {
-    return req.method === 'GET' && req.url.endsWith(this.url) ?
-      Observable.of(this.event.clone({body: _.cloneDeep(this.event.body)})) : next.handle(req);
+    return req.method === 'GET' && req.url.endsWith(this.url) ? this.handle(req) : next.handle(req);
+  }
+
+  handle(req: HttpRequest<any>): Observable<HttpResponse<T>> {
+    return Observable.of(this.event.clone({body: _.cloneDeep(this.event.body)}));
   }
 
 }
